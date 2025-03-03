@@ -1,6 +1,7 @@
 from typing import Any
 from tests.utils import Obj
 import pytest
+from gloomy import gloom
 
 
 @pytest.mark.parametrize(
@@ -15,7 +16,5 @@ import pytest
     ],
 )
 def test_valid_paths(target: Any, spec: str, expected: Any):
-    from gloom import gloom
-
     result = gloom(target, spec)
     assert result == expected

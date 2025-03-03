@@ -1,6 +1,6 @@
 from typing import Any, Callable
 from pytest_benchmark.fixture import BenchmarkFixture  # type: ignore[import-untyped]
-from gloom import gloom
+from gloomy import gloom
 from glom import glom  # type: ignore[import-untyped]
 from functools import partial
 import pytest
