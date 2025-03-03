@@ -1,0 +1,26 @@
+[project]
+name = "gloom"
+version = "0.1.0"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "glom>=24.11.0",
+    "pytest-benchmark[histogram]>=5.1.0",
+    "pytest>=8.3.4",
+    "ruff>=0.9.9",
+    "mypy>=1.15.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = [
+    "-s",
+    "--benchmark-warmup-iterations=100_000",
+    "--benchmark-group-by=func",
+]
+
+[tool.ruff]
+line-length = 120
