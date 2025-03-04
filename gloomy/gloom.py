@@ -13,11 +13,10 @@ def gloom(
     default: Any = _no_default,
 ) -> Any:
     """
-    Access a nested attribute, key or index of an object.
+    Access a nested attribute, key or index of an object, mapping or sequence.
 
     Raises:
-        PathAccessError: if no default is provided.
-        ValueError: If object in path contains
+        PathAccessError: if the path cannot be accessed and no default is provided.
 
     """
     if target is None:
