@@ -9,13 +9,13 @@ A good use-case would be to improve existing codebases in which the `glom` patte
 
 ## Installation
 
-```
+```sh
 pip install gloomy
 ```
 
 ## Usage
 
-```
+```python
 from gloomy import gloom
 
 assert gloom({"a": {"b": {"c": [123]}}}, "a.b.c.0") == 123
