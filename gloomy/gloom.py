@@ -31,27 +31,22 @@ def gloom(
     for part in path_parts:
         # Get key/index of mapping/sequence
         if getitem := getattr(location, "__getitem__", None):
+            if part.isdigit():
+                try:
+                    # Sequence or mapping with int keys
+                    location = getitem(int(part))
+                    continue
+                except IndexError as e:
+                    if default is _no_default:
+                        raise PathAccessError from e
+                    return default
+                except KeyError:
+                    # Possibly mapping with numeric string keys
+                    pass
             try:
-                if part.isdigit():
-                    try:
-                        # Sequence or mapping with int keys
-                        location = getitem(int(part))
-                    except IndexError as e:
-                        if default is _no_default:
-                            raise PathAccessError from e
-                        return default
-                    except KeyError as e:
-                        # Possibly mapping with numeric string keys
-                        try:
-                            location = getitem(part)
-                        except KeyError:
-                            if default is _no_default:
-                                raise PathAccessError from e
-                            return default
-                else:
-                    location = getitem(part)
+                location = getitem(part)
                 continue
-            except (KeyError, IndexError) as e:
+            except KeyError as e:
                 if default is _no_default:
                     raise PathAccessError from e
                 return default
