@@ -1,7 +1,6 @@
 from typing import Any, Mapping, Sequence
 
 _no_default = object()
-_sentinel = object()
 
 
 class PathAccessError(Exception):
@@ -32,27 +31,31 @@ def gloom(
 
     for part in path_parts:
         # Get key/index of mapping/sequence
-        if getattr(location, "__getitem__", None):
-            if isinstance(location, Mapping):
-                try:
-                    location = location[part]
-                    continue
-                except KeyError as e:
-                    if default is _no_default:
-                        raise PathAccessError from e
-                    return default
-            if isinstance(location, Sequence):
-                try:
-                    location = location[int(part)]
-                    continue
-                except IndexError as e:
-                    if default is _no_default:
-                        raise PathAccessError from e
-                    return default
-            else:
-                msg = f"Unsupported type: {type(location)}"
-                raise ValueError(msg)
-
+        if getitem := getattr(location, "__getitem__", None):
+            try:
+                if part.isdigit():
+                    try:
+                        # Sequence or mapping with int keys
+                        location = getitem(int(part))
+                    except IndexError as e:
+                        if default is _no_default:
+                            raise PathAccessError from e
+                        return default
+                    except KeyError as e:
+                        # Possibly mapping with numeric string keys
+                        try:
+                            location = getitem(part)
+                        except KeyError:
+                            if default is _no_default:
+                                raise PathAccessError from e
+                            return default
+                else:
+                    location = getitem(part)
+                continue
+            except (KeyError, IndexError) as e:
+                if default is _no_default:
+                    raise PathAccessError from e
+                return default
         try:
             location = getattr(location, part)
         except AttributeError as e:

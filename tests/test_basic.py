@@ -7,7 +7,9 @@ from gloomy import gloom
 @pytest.mark.parametrize(
     ("target", "spec", "expected"),
     [
-        ([0], "0", 0),
+        ([1], "0", 1),
+        ({0: 1}, "0", 1),
+        ({"0": 1}, "0", 1),
         ({"a": 123}, "a", 123),
         (Obj(a=123), "a", 123),
         ({"a": {"b": {"c": 123}}}, "a.b.c", 123),
