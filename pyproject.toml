@@ -1,5 +1,6 @@
 [project]
 name = "gloomy"
+description = "glom, but not as slow"
 version = "0.2.3"
 readme = "README.md"
 requires-python = ">=3.10"
