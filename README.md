@@ -1,6 +1,6 @@
 # gloomy
 
-> "glom but not as slow"
+> glom, but not as slow
 
 An utility for retrieving values from deeply nested object attributes, mapping keys, sequence indexes, or any combination of them.
 
