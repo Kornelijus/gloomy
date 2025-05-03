@@ -35,18 +35,6 @@ class TestBenchmark:
         impl: Callable | None,
     ):
         def _manual_impl(target: Any, spec: str):
-            return target.get("a", {}).get("b", {}).get("c")
-
-        kwargs = dict(target={"a": {"b": {"c": 123}}}, spec="a.b.c")
-        result = benchmark(impl or _manual_impl, **kwargs)
-        assert result == 123
-
-    def test_dict_key_exists_deep(
-        self,
-        benchmark: BenchmarkFixture,
-        impl: Callable | None,
-    ):
-        def _manual_impl(target: Any, spec: str):
             try:
                 return target["a"]["b"]["c"]["d"]["e"]["f"]["g"]["h"]["i"]
             except (TypeError, KeyError):
@@ -110,12 +98,6 @@ class TestBenchmark:
                 return target.a[0].b
             except (AttributeError, IndexError):
                 return None
-
-        class ObjectB:
-            b = 123
-
-        class TargetObject:
-            a = [ObjectB()]
 
         kwargs = dict(target=Obj(a=[Obj(b=123)]), spec="a.0.b")
         result = benchmark(impl or _manual_impl, **kwargs)
