@@ -1,5 +1,5 @@
 [project]
-name = "gloomy"
+name = "gloomyrs"
 description = "glom, but not as slow"
 version = "0.2.5"
 readme = "README.md"
@@ -22,6 +22,8 @@ dev = [
     "pytest>=8.3.4",
     "ruff>=0.9.9",
     "mypy>=1.15.0",
+    "maturin[patchelf]>=1.8.3",
+    "pyinstrument>=5.0.1",
 ]
 
 [tool.pytest.ini_options]
@@ -35,6 +37,18 @@ addopts = [
 [tool.ruff]
 line-length = 120
 
+
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["maturin>=1.8,<2.0"]
+build-backend = "maturin"
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+profile = "release"
+
+[tool.uv]
+cache-keys = [
+    { file = "pyproject.toml" },
+    { file = "Cargo.toml" },
+    { file = "**/*.rs" },
+]

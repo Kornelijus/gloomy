@@ -1,8 +1,9 @@
 from typing import Any, Callable
 from pytest_benchmark.fixture import BenchmarkFixture  # type: ignore[import-untyped]
-from gloomy import gloom
+
+from gloomy.gloom import gloom
+from gloomyrs import gloom_rusty
 from glom import glom  # type: ignore[import-untyped]
-from functools import partial
 import pytest
 
 from tests.utils import Obj
@@ -11,8 +12,9 @@ from tests.utils import Obj
 @pytest.mark.parametrize(
     ("impl"),
     [
-        pytest.param(partial(glom, default=None), id="glom"),
-        pytest.param(partial(gloom, default=None), id="gloom"),
+        pytest.param(glom, id="glom"),
+        pytest.param(gloom, id="gloom"),
+        pytest.param(gloom_rusty, id="gloom-rusty"),
         pytest.param(None, id="manual-impl"),
     ],
 )
@@ -22,10 +24,10 @@ class TestBenchmark:
         benchmark: BenchmarkFixture,
         impl: Callable | None,
     ):
-        def _manual_impl(target: Any, spec: str):
+        def _manual_impl(target: Any, spec: str, **kwargs):
             return target.get("missing")
 
-        kwargs = dict(target={}, spec="missing")
+        kwargs = dict(target={}, spec="missing", default=None)
         result = benchmark(impl or _manual_impl, **kwargs)
         assert result is None
 
@@ -34,7 +36,7 @@ class TestBenchmark:
         benchmark: BenchmarkFixture,
         impl: Callable | None,
     ):
-        def _manual_impl(target: Any, spec: str):
+        def _manual_impl(target: Any, spec: str, **kwargs):
             try:
                 return target["a"]["b"]["c"]["d"]["e"]["f"]["g"]["h"]["i"]
             except (TypeError, KeyError):
@@ -42,7 +44,7 @@ class TestBenchmark:
 
         data = {"a": {"b": {"c": {"d": {"e": {"f": {"g": {"h": {"i": 123}}}}}}}}}
 
-        kwargs = dict(target=data, spec="a.b.c.d.e.f.g.h.i")
+        kwargs = dict(target=data, spec="a.b.c.d.e.f.g.h.i", default=None)
         result = benchmark(impl or _manual_impl, **kwargs)
         assert result == 123
 
@@ -51,10 +53,10 @@ class TestBenchmark:
         benchmark: BenchmarkFixture,
         impl: Callable | None,
     ):
-        def _manual_impl(target: Any, spec: str):
+        def _manual_impl(target: Any, spec: str, **kwargs):
             return getattr(target, "missing", None)
 
-        kwargs = dict(target=Obj(), spec="missing")
+        kwargs = dict(target=Obj(), spec="missing", default=None)
         result = benchmark(impl or _manual_impl, **kwargs)
         assert result is None
 
@@ -63,13 +65,13 @@ class TestBenchmark:
         benchmark: BenchmarkFixture,
         impl: Callable | None,
     ):
-        def _manual_impl(target: Any, spec: str):
+        def _manual_impl(target: Any, spec: str, **kwargs):
             try:
                 return target.a.b.c
             except AttributeError:
                 return None
 
-        kwargs = dict(target=Obj(a=Obj(b=Obj(c=123))), spec="a.b.c")
+        kwargs = dict(target=Obj(a=Obj(b=Obj(c=123))), spec="a.b.c", default=None)
         result = benchmark(impl or _manual_impl, **kwargs)
         assert result == 123
 
@@ -78,13 +80,13 @@ class TestBenchmark:
         benchmark: BenchmarkFixture,
         impl: Callable | None,
     ):
-        def _manual_impl(target: Any, spec: str):
+        def _manual_impl(target: Any, spec: str, **kwargs):
             try:
                 return target.a[0].b
             except (AttributeError, IndexError):
                 return None
 
-        kwargs = dict(target=Obj(a=[]), spec="a.0.b")
+        kwargs = dict(target=Obj(a=[]), spec="a.0.b", default=None)
         result = benchmark(impl or _manual_impl, **kwargs)
         assert result is None
 
@@ -93,12 +95,12 @@ class TestBenchmark:
         benchmark: BenchmarkFixture,
         impl: Callable | None,
     ):
-        def _manual_impl(target: Any, spec: str):
+        def _manual_impl(target: Any, spec: str, **kwargs):
             try:
                 return target.a[0].b
             except (AttributeError, IndexError):
                 return None
 
-        kwargs = dict(target=Obj(a=[Obj(b=123)]), spec="a.0.b")
+        kwargs = dict(target=Obj(a=[Obj(b=123)]), spec="a.0.b", default=None)
         result = benchmark(impl or _manual_impl, **kwargs)
         assert result == 123

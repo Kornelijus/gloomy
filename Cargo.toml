@@ -1,0 +1,22 @@
+[package]
+name = "gloomy"
+version = "0.1.0"
+edition = "2024"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "gloomyrs"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.24.2" }
+
+
+[profile.release]
+codegen-units = 1
+lto = "fat"
+
+[profile.profiling]
+inherits = "release"
+debug = true
+strip = false
