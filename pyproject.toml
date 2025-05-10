@@ -1,7 +1,7 @@
 [project]
-name = "gloomyrs"
+name = "gloomy"
+dynamic = ["version"]
 description = "glom, but not as slow"
-version = "0.2.5"
 readme = "README.md"
 requires-python = ">=3.10"
 classifiers = [
@@ -22,8 +22,9 @@ dev = [
     "pytest>=8.3.4",
     "ruff>=0.9.9",
     "mypy>=1.15.0",
-    "maturin[patchelf]>=1.8.3",
+    "maturin>=1.8.4",
     "pyinstrument>=5.0.1",
+    "maturin-import-hook>=0.2.0",
 ]
 
 [tool.pytest.ini_options]
@@ -32,11 +33,12 @@ addopts = [
     "-s",
     "--benchmark-warmup-iterations=100_000",
     "--benchmark-group-by=func",
+    "--benchmark-columns=min,max,mean,ops,rounds,iterations",
+    "--benchmark-name=short",
 ]
 
 [tool.ruff]
 line-length = 120
-
 
 [build-system]
 requires = ["maturin>=1.8,<2.0"]

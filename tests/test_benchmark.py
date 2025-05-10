@@ -1,9 +1,8 @@
 from typing import Any, Callable
 from pytest_benchmark.fixture import BenchmarkFixture  # type: ignore[import-untyped]
 
-from gloomy.gloom import gloom
-from gloomyrs import gloom_rusty
-from glom import glom  # type: ignore[import-untyped]
+from gloomy import gloom_rusty, gloom_path, gloom_assign
+from glom import glom, assign as glom_assign  # type: ignore[import-untyped]
 import pytest
 
 from tests.utils import Obj
@@ -13,8 +12,8 @@ from tests.utils import Obj
     ("impl"),
     [
         pytest.param(glom, id="glom"),
-        pytest.param(gloom, id="gloom"),
-        pytest.param(gloom_rusty, id="gloom-rusty"),
+        pytest.param(gloom_rusty, id="gloom-path-str"),
+        pytest.param(gloom_path, id="gloom-path-tuple"),
         pytest.param(None, id="manual-impl"),
     ],
 )
@@ -28,6 +27,9 @@ class TestBenchmark:
             return target.get("missing")
 
         kwargs = dict(target={}, spec="missing", default=None)
+        if impl is gloom_path:
+            kwargs["spec"] = ("missing",)
+
         result = benchmark(impl or _manual_impl, **kwargs)
         assert result is None
 
@@ -45,6 +47,9 @@ class TestBenchmark:
         data = {"a": {"b": {"c": {"d": {"e": {"f": {"g": {"h": {"i": 123}}}}}}}}}
 
         kwargs = dict(target=data, spec="a.b.c.d.e.f.g.h.i", default=None)
+        if impl is gloom_path:
+            kwargs["spec"] = ("a", "b", "c", "d", "e", "f", "g", "h", "i")
+
         result = benchmark(impl or _manual_impl, **kwargs)
         assert result == 123
 
@@ -57,6 +62,9 @@ class TestBenchmark:
             return getattr(target, "missing", None)
 
         kwargs = dict(target=Obj(), spec="missing", default=None)
+        if impl is gloom_path:
+            kwargs["spec"] = ("missing",)
+
         result = benchmark(impl or _manual_impl, **kwargs)
         assert result is None
 
@@ -72,6 +80,9 @@ class TestBenchmark:
                 return None
 
         kwargs = dict(target=Obj(a=Obj(b=Obj(c=123))), spec="a.b.c", default=None)
+        if impl is gloom_path:
+            kwargs["spec"] = ("a", "b", "c")
+
         result = benchmark(impl or _manual_impl, **kwargs)
         assert result == 123
 
@@ -87,6 +98,9 @@ class TestBenchmark:
                 return None
 
         kwargs = dict(target=Obj(a=[]), spec="a.0.b", default=None)
+        if impl is gloom_path:
+            kwargs["spec"] = ("a", 0, "b")
+
         result = benchmark(impl or _manual_impl, **kwargs)
         assert result is None
 
@@ -102,5 +116,38 @@ class TestBenchmark:
                 return None
 
         kwargs = dict(target=Obj(a=[Obj(b=123)]), spec="a.0.b", default=None)
+        if impl is gloom_path:
+            kwargs["spec"] = ("a", 0, "b")
+
         result = benchmark(impl or _manual_impl, **kwargs)
         assert result == 123
+
+
+@pytest.mark.parametrize(
+    ("impl"),
+    [
+        pytest.param(glom_assign, id="glom"),
+        pytest.param(gloom_assign, id="gloom"),
+        pytest.param(None, id="manual-impl"),
+    ],
+)
+class TestBenchmarkAssign:
+    def test_assign_dict_value(
+        self,
+        benchmark: BenchmarkFixture,
+        impl: Callable | None,
+    ):
+        def _manual_impl(obj: Any, path: str, val: Any, **kwargs):
+            obj["a"]["b"]["c"]["d"]["e"]["f"]["g"]["h"]["i"] = val
+            # return obj
+
+        data = {"a": {"b": {"c": {"d": {"e": {"f": {"g": {"h": {"i": None}}}}}}}}}
+        # expected = {"a": {"b": {"c": {"d": {"e": {"f": {"g": {"h": {"i": 123}}}}}}}}}
+
+        kwargs = dict(obj=data, path="a.b.c.d.e.f.g.h.i", val=123)
+        if impl is gloom_path:
+            kwargs["spec"] = ("a", "b", "c", "d", "e", "f", "g", "h", "i")
+
+        benchmark(impl or _manual_impl, **kwargs)
+        assert data["a"]["b"]["c"]["d"]["e"]["f"]["g"]["h"]["i"] == 123
+        # assert result == expected
