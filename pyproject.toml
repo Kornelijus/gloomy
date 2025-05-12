@@ -31,10 +31,13 @@ dev = [
 testpaths = ["tests"]
 addopts = [
     "-s",
-    "--benchmark-warmup-iterations=100_000",
+    # "--benchmark-warmup=on",
+    # "--benchmark-warmup-iterations=100_000",
+    # "--benchmark-min-time=0.0001",
     "--benchmark-group-by=func",
     "--benchmark-columns=min,max,mean,ops,rounds,iterations",
     "--benchmark-name=short",
+    "--benchmark-calibration-precision=100",
 ]
 
 [tool.ruff]
@@ -52,5 +55,7 @@ profile = "release"
 cache-keys = [
     { file = "pyproject.toml" },
     { file = "Cargo.toml" },
+    { file = "Cargo.lock" },
+    { file = ".cargo/config.toml" },
     { file = "**/*.rs" },
 ]
