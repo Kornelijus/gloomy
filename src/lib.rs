@@ -75,9 +75,6 @@ fn gloom_compat(
 fn gloom_str(target: Bound<'_, PyAny>, spec: &str, default: PyObject) -> PyResult<PyObject> {
     let mut location = target;
 
-    // for part in spec.byte_split(b'.') {
-    // for part in spec.split(|b| b == &b'.') {
-    // let part = from_utf8_unchecked(part);
     for part in spec.split('.') {
         if let Some(index) = get_single_digit_index(part) {
             if let Ok(item) = location.get_item(index) {
