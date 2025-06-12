@@ -1,7 +1,7 @@
 from typing import Any, Callable
 import pytest
 from tests.utils import Obj
-from gloomy import gloom_compat as gloom
+from gloomy import gloom
 from glom import glom  # type: ignore[import-untyped]
 
 

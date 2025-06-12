@@ -1,6 +1,6 @@
 from typing import Any, Callable
 from glom import glom  # type: ignore[import-untyped]
-from gloomy import gloom_compat
+from gloomy import gloom
 import pytest
 from pytest_benchmark.fixture import BenchmarkFixture  # type: ignore[import-untyped]
 
@@ -35,7 +35,7 @@ def _manual_impl_dict_key_get_chain(target: Any, spec: str, default=None):
     [
         pytest.param(_manual_impl_dict_key_try_except, id="manual-impl-try-except"),
         pytest.param(_manual_impl_dict_key_get_chain, id="manual-impl-get-chain"),
-        pytest.param(gloom_compat, id="gloomy"),
+        pytest.param(gloom, id="gloomy"),
         pytest.param(glom, id="glom"),
     ],
 )
@@ -61,7 +61,7 @@ def test_dict_key_exists(
     [
         pytest.param(_manual_impl_dict_key_try_except, id="manual-impl-try-except"),
         pytest.param(_manual_impl_dict_key_get_chain, id="manual-impl-get-chain"),
-        pytest.param(gloom_compat, id="gloomy"),
+        pytest.param(gloom, id="gloomy"),
         pytest.param(glom, id="glom"),
     ],
 )

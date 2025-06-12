@@ -52,7 +52,7 @@ mod tests {
 
 #[pyfunction]
 #[pyo3(text_signature = "(target, spec, *, default=None)")]
-fn gloom_compat(
+fn gloom(
     target: Bound<'_, PyAny>,
     spec: Bound<'_, PyAny>,
     default: PyObject,
@@ -151,7 +151,7 @@ fn gloom_tuple(
 
 #[pymodule]
 fn gloomy(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(gloom_compat, m)?)?;
+    m.add_function(wrap_pyfunction!(gloom, m)?)?;
     m.add_function(wrap_pyfunction!(assign::assign, m)?)?;
     Ok(())
 }

@@ -1,7 +1,7 @@
 from typing import Any
 from tests.utils import Obj
 import pytest
-from gloomy import gloom_compat as gloom
+from gloomy import gloom
 
 
 @pytest.mark.parametrize(

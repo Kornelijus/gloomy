@@ -1,6 +1,6 @@
 from typing import Any, Callable
 from glom import glom  # type: ignore[import-untyped]
-from gloomy import gloom_compat
+from gloomy import gloom
 import pytest
 from pytest_benchmark.fixture import BenchmarkFixture  # type: ignore[import-untyped]
 
@@ -25,7 +25,7 @@ def _manual_impl_obj_hasattr_chain(target: Any, spec: str, **kwargs):
     [
         pytest.param(_manual_impl_obj_attr_try_except, id="manual-impl-try-except"),
         pytest.param(_manual_impl_obj_hasattr_chain, id="manual-impl-hasattr-chain"),
-        pytest.param(gloom_compat, id="gloomy"),
+        pytest.param(gloom, id="gloomy"),
         pytest.param(glom, id="glom"),
     ],
 )
@@ -34,7 +34,7 @@ def test_obj_attr_exists(
     impl: Callable,
 ):
     kwargs = dict(target=Obj(a=Obj(b=Obj(c=123))), spec="a.b.c", default=None)
-    if impl is gloom_compat:
+    if impl is gloom:
         kwargs["spec"] = ("a", "b", "c")
 
     result = benchmark(impl, **kwargs)
@@ -46,7 +46,7 @@ def test_obj_attr_exists(
     [
         pytest.param(_manual_impl_obj_attr_try_except, id="manual-impl-try-except"),
         pytest.param(_manual_impl_obj_hasattr_chain, id="manual-impl-hasattr-chain"),
-        pytest.param(gloom_compat, id="gloomy"),
+        pytest.param(gloom, id="gloomy"),
         pytest.param(glom, id="glom"),
     ],
 )
@@ -55,7 +55,7 @@ def test_obj_attr_missing(
     impl: Callable,
 ):
     kwargs = dict(target=Obj(a=Obj(b=Obj(c=None))), spec="a.b.c", default=None)
-    if impl is gloom_compat:
+    if impl is gloom:
         kwargs["spec"] = ("a", "b", "c")
 
     result = benchmark(impl, **kwargs)

@@ -1,6 +1,6 @@
 from typing import Any, Callable
 from glom import glom  # type: ignore[import-untyped]
-from gloomy import gloom_compat
+from gloomy import gloom
 import pytest
 from pytest_benchmark.fixture import BenchmarkFixture  # type: ignore[import-untyped]
 
@@ -22,7 +22,7 @@ LIST_IN_MISSING = [[None, [None, None, [None, None, None, [None, None, None, Non
 @pytest.mark.parametrize(
     ("impl"),
     [
-        pytest.param(gloom_compat, id="gloomy"),
+        pytest.param(gloom, id="gloomy"),
         pytest.param(glom, id="glom"),
     ],
 )
@@ -45,7 +45,7 @@ def test_dict_key_exists(
 @pytest.mark.parametrize(
     ("impl"),
     [
-        pytest.param(gloom_compat, id="gloomy"),
+        pytest.param(gloom, id="gloomy"),
         pytest.param(glom, id="glom"),
     ],
 )
