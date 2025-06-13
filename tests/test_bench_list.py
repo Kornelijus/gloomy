@@ -1,4 +1,4 @@
-from typing import Any, Callable
+from typing import Callable
 from glom import glom  # type: ignore[import-untyped]
 from gloomy import gloom
 import pytest
