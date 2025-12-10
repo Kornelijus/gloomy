@@ -2,7 +2,7 @@ from typing import Any
 
 from gloomy.errors import PathAccessError
 from gloomy.types import TargetObject, _NO_DEFAULT, Path
-from gloomy.utils import _is_digit_ascii, _path_parts
+from gloomy.utils import _is_digit_ascii
 
 
 def gloom(
@@ -23,8 +23,16 @@ def gloom(
             raise PathAccessError(msg)
         return default
 
-    path_parts = _path_parts(spec)
     location = target
+
+    match spec:
+        case str():
+            path_parts: list[str] | tuple[str, ...] = spec.split(".")
+        case tuple():
+            path_parts = spec
+        case _:
+            msg = f"Invalid path type: {type(spec)}"
+            raise ValueError(msg)
 
     for part in path_parts:
         # Get key/index of mapping/sequence
