@@ -1,5 +1,8 @@
-from typing import Any
+from typing import Any, ContextManager
+
+from glom import PathAccessError  # type: ignore[import-untyped]
 from tests.utils import Obj
+from contextlib import nullcontext as does_not_raise
 import pytest
 from gloomy import gloom
 
@@ -18,5 +21,18 @@ from gloomy import gloom
     ],
 )
 def test_valid_paths(target: Any, spec: str, expected: Any):
-    result = gloom(target, spec)
+    result = gloom(target, spec, default=None)
     assert result == expected
+
+
+@pytest.mark.parametrize(
+    ("target", "spec", "expectation"),
+    [
+        ({}, "a.b.c", pytest.raises(PathAccessError)),
+        ({"abc": None}, "abc", does_not_raise()),
+        ({"0": None}, "0", does_not_raise()),
+    ],
+)
+def test_raises_path_access_error(target: Any, spec: str, expectation: ContextManager):
+    with expectation:
+        gloom(target, spec, default=None)
