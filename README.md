@@ -8,8 +8,7 @@ Not meant as a drop in replacement for `glom`, only basic functionality is imple
 A good use-case would be to improve existing codebases in which the `glom` pattern is commonly used for convenience, as it can significantly affect performance.
 
 ### Planned features
-🏗️ `assign` utility  
-🏗️ `Path` object 
+🏗️ `delete` utility   
 
 ### Installation
 
