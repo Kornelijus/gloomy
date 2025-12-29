@@ -14,7 +14,7 @@ A good use-case would be to improve existing codebases in which the `glom` patte
 ### Installation
 
 ```sh
-pip install gloomy
+uv pip install gloomy
 ```
 
 ### Usage
