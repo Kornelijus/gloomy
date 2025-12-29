@@ -69,6 +69,5 @@ def test_dict_key_missing(
     impl: Callable | None,
     spec: tuple | str,
 ):
-    # kwargs = dict(target=DICT_IN_MISSING, spec=spec, default=None)
     result = benchmark(impl, target=DICT_IN_MISSING, spec=spec, default=None)
     assert result is None
