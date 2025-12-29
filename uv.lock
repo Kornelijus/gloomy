@@ -75,7 +75,7 @@ wheels = [
 
 [[package]]
 name = "gloomy"
-version = "0.2.5"
+version = "0.3.0a1"
 source = { editable = "." }
 
 [package.dev-dependencies]
