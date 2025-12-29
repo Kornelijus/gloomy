@@ -1,6 +1,6 @@
 from typing import Any, ContextManager
 
-from glom import PathAccessError  # type: ignore[import-untyped]
+from gloomy.errors import PathAccessError
 from tests.utils import Obj
 from contextlib import nullcontext as does_not_raise
 import pytest
@@ -35,4 +35,4 @@ def test_valid_paths(target: Any, spec: str, expected: Any):
 )
 def test_raises_path_access_error(target: Any, spec: str, expectation: ContextManager):
     with expectation:
-        gloom(target, spec, default=None)
+        gloom(target, spec)
