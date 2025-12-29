@@ -64,7 +64,7 @@ def assign(
             raise PathAccessError
 
         if setitem_fn := getattr(location, "__setitem__", None):
-            if _is_digit_ascii(part):
+            if isinstance(part, int) or _is_digit_ascii(part):
                 try:
                     setitem_fn(int(part), to_assign)
                     if is_destination:

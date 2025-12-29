@@ -37,7 +37,7 @@ def gloom(
     for part in path_parts:
         # Get key/index of mapping/sequence
         if getitem := getattr(location, "__getitem__", None):
-            if _is_digit_ascii(part):
+            if isinstance(part, int) or _is_digit_ascii(part):
                 try:
                     # Sequence or mapping with int keys
                     location = getitem(int(part))
