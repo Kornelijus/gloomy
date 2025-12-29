@@ -44,7 +44,6 @@ def test_dict_key_exists(
     impl: Callable,
     spec: tuple | str,
 ):
-    # kwargs = dict(target=DICT_IN_EXISTS, spec=spec, default=None)
     result = benchmark(impl, target=DICT_IN_EXISTS, spec=spec, default=None)
     assert result == 123
 

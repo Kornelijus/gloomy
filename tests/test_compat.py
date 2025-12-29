@@ -2,7 +2,7 @@ from typing import Any, Callable
 import pytest
 from tests.utils import Obj
 from gloomy import gloom
-from glom import glom  # type: ignore[import-untyped]
+from glom import glom, Path as GlomPath  # type: ignore[import-untyped]
 
 
 # @pytest.mark.xfail
@@ -17,10 +17,21 @@ from glom import glom  # type: ignore[import-untyped]
     ("target", "spec", "expected"),
     [
         pytest.param([123], "0", 123, id="list-index"),
-        pytest.param([123], (0,), None, id="list-index-tuple-path-int", marks=pytest.mark.xfail),
-        pytest.param([123], ("0",), None, id="list-index-tuple-path-int", marks=pytest.mark.xfail),
-        # ({0: 1}, "0", 1),
-        # ({0: 1}, (0,), 1),
+        pytest.param([123], (0,), 123, id="list-index-tuple-path-int"),
+        pytest.param([123], ("0",), 123, id="list-index-tuple-path-int"),
+        pytest.param(
+            {0: 1},
+            "0",
+            1,
+            id="dict-int-index-path-str",
+            marks=pytest.mark.xfail(reason="glom doesn't support string-to-int key coercion for str path"),
+        ),
+        pytest.param(
+            {0: 1},
+            (0,),
+            1,
+            id="dict-int-index-path-tuple",
+        ),
         ({"0123": 1}, "0123", 1),
         ({"a": 123}, "a", 123),
         (Obj(a=123), "a", 123),
@@ -32,5 +43,7 @@ from glom import glom  # type: ignore[import-untyped]
     ],
 )
 def test_compat_glom(impl: Callable, target: Any, spec: str, expected: Any):
+    if impl is glom and isinstance(spec, tuple):
+        spec = GlomPath(*spec)
     result = impl(target, spec, default=None)
     assert result == expected
