@@ -1,5 +1,5 @@
 from typing import Callable
-from glom import glom  # type: ignore[import-untyped]
+from glom import glom, Path as GlomPath  # type: ignore[import-untyped]
 from gloomy import gloom
 import pytest
 from pytest_benchmark.fixture import BenchmarkFixture  # type: ignore[import-untyped]
@@ -16,7 +16,7 @@ LIST_IN_MISSING = [[None, [None, None, [None, None, None, [None, None, None, Non
     ("spec"),
     [
         pytest.param(LIST_INDEX_PATH_STR, id="str"),
-        # pytest.param(LIST_INDEX_PATH_TUPLE, id="tuple"),
+        pytest.param(LIST_INDEX_PATH_TUPLE, id="tuple"),
     ],
 )
 @pytest.mark.parametrize(
@@ -26,11 +26,13 @@ LIST_IN_MISSING = [[None, [None, None, [None, None, None, [None, None, None, Non
         pytest.param(glom, id="glom"),
     ],
 )
-def test_dict_key_exists(
+def test_list_index_exists(
     benchmark: BenchmarkFixture,
     impl: Callable,
     spec: tuple | str,
 ):
+    if impl is glom and isinstance(spec, tuple):
+        spec = GlomPath(*spec)
     result = benchmark(impl, target=LIST_IN_EXISTS, spec=spec, default=None)
     assert result == 123
 
@@ -39,7 +41,7 @@ def test_dict_key_exists(
     ("spec"),
     [
         pytest.param(LIST_INDEX_PATH_STR, id="str"),
-        # pytest.param(LIST_INDEX_PATH_TUPLE, id="tuple"),
+        pytest.param(LIST_INDEX_PATH_TUPLE, id="tuple"),
     ],
 )
 @pytest.mark.parametrize(
@@ -49,10 +51,12 @@ def test_dict_key_exists(
         pytest.param(glom, id="glom"),
     ],
 )
-def test_dict_key_missing(
+def test_list_index_missing(
     benchmark: BenchmarkFixture,
     impl: Callable | None,
     spec: tuple | str,
 ):
+    if impl is glom and isinstance(spec, tuple):
+        spec = GlomPath(*spec)
     result = benchmark(impl, target=LIST_IN_MISSING, spec=spec, default=None)
     assert result is None
