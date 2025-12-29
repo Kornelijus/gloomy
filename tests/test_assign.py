@@ -8,8 +8,8 @@ from pydantic import BaseModel
 
 from gloomy import assign
 from glom import assign as glom_assign, Path  # type: ignore[import-untyped]
-from glom import PathAssignError as GlomPathAssignError
-from gloomy.errors import PathAssignError
+from glom import PathAssignError as GlomPathAssignError, PathAccessError as GlomPathAccessError
+from gloomy.errors import PathAssignError, PathAccessError
 
 
 class Address(BaseModel):
@@ -48,11 +48,31 @@ class Organization(BaseModel):
         (None, "a"),
         ("abc", "a"),
         (123, "a"),
+        ([], "1"),
     ],
 )
 def test_raises_path_assign_error(impl: Callable, obj: Any, path: str):
     """Test assignment when target is None"""
     with pytest.raises((PathAssignError, GlomPathAssignError)):
+        impl(obj, path, 1)
+
+
+@pytest.mark.parametrize(
+    "impl",
+    [
+        pytest.param(assign, id="gloomy"),
+        pytest.param(glom_assign, id="glom"),
+    ],
+)
+@pytest.mark.parametrize(
+    ("obj", "path"),
+    [
+        ({"a": 123}, "b.a"),
+    ],
+)
+def test_raises_path_access_error(impl: Callable, obj: Any, path: str):
+    """Test assignment when target is None"""
+    with pytest.raises((PathAccessError, GlomPathAccessError)):
         impl(obj, path, 1)
 
 

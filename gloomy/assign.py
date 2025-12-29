@@ -73,19 +73,19 @@ def assign(
                     continue
                 except (KeyError, IndexError, TypeError):
                     pass
-            # try:
-            #     setitem_fn(part, to_assign)
-            #     if is_destination:
-            #         break
-            #     location = to_assign
-            #     continue
-            # except (KeyError, TypeError):
-            #     pass
-            setitem_fn(part, to_assign)
-            if is_destination:
-                break
-            location = to_assign
-            continue
+            try:
+                setitem_fn(part, to_assign)
+                if is_destination:
+                    break
+                location = to_assign
+                continue
+            except (KeyError, TypeError):
+                pass
+            # setitem_fn(part, to_assign)
+            # if is_destination:
+            # break
+            # location = to_assign
+            # continue
 
         if not hasattr(location, "__dict__"):
             raise PathAssignError(f"Cannot assign to type {type(obj)!r}")
