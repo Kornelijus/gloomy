@@ -6,8 +6,8 @@ from pydantic import BaseModel
 
 from gloomy import delete
 from glom import delete as glom_delete, Path  # type: ignore[import-untyped]
-from glom import PathAccessError as GlomPathAccessError
-from glom.mutation import PathDeleteError as GlomPathDeleteError
+from glom import PathAccessError as GlomPathAccessError  # type: ignore[import-untyped]
+from glom.mutation import PathDeleteError as GlomPathDeleteError  # type: ignore[import-untyped]
 from gloomy.errors import PathAccessError, PathDeleteError
 
 from tests.utils import Obj
