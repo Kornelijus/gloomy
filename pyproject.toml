@@ -23,6 +23,7 @@ dev = [
     "ruff>=0.9.9",
     "mypy>=1.15.0",
     "pydantic>=2.12.5",
+    "matplotlib>=3.10.8",
 ]
 
 [tool.pytest.ini_options]
@@ -31,6 +32,9 @@ addopts = [
     "-s",
     "--benchmark-warmup-iterations=100_000",
     "--benchmark-group-by=func",
+]
+markers = [
+    "bench: marks tests as benchmarks (select with -m bench)",
 ]
 
 [tool.ruff]
