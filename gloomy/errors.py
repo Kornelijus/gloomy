@@ -4,3 +4,7 @@ class PathAccessError(Exception):
 
 class PathAssignError(Exception):
     """Raised when specified path cannot be assigned to."""
+
+
+class PathDeleteError(Exception):
+    """Raised when specified path cannot be deleted from."""
