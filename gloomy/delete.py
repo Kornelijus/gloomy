@@ -68,7 +68,7 @@ def delete(
                 except IndexError:
                     if ignore_missing:
                         break
-                    raise PathAccessError
+                    raise PathDeleteError
                 except (KeyError, TypeError):
                     pass  # fall through to string key or delattr
             try:
@@ -77,7 +77,7 @@ def delete(
             except KeyError:
                 if ignore_missing:
                     break
-                raise PathAccessError
+                raise PathDeleteError
             except TypeError:
                 pass  # fall through to delattr
 
@@ -87,7 +87,7 @@ def delete(
         except AttributeError:
             if ignore_missing:
                 break
-            raise PathAccessError
+            raise PathDeleteError
         except TypeError as e:
             raise PathDeleteError(f"Cannot delete from type {type(location)!r}") from e
 

@@ -7,7 +7,8 @@ from pydantic import BaseModel
 from gloomy import delete
 from glom import delete as glom_delete, Path  # type: ignore[import-untyped]
 from glom import PathAccessError as GlomPathAccessError
-from gloomy.errors import PathAccessError
+from glom.mutation import PathDeleteError as GlomPathDeleteError
+from gloomy.errors import PathAccessError, PathDeleteError
 
 from tests.utils import Obj
 
@@ -74,11 +75,22 @@ class TestDeleteGlomCompat:
             pytest.param({"a": 1}, "b", id="missing-dict-key"),
             pytest.param({"a": {"b": 1}}, "a.c", id="missing-nested-dict-key"),
             pytest.param([1, 2, 3], "5", id="list-index-out-of-range"),
+        ],
+    )
+    def test_raises_path_delete_error(self, impl: Callable, obj: Any, path: str):
+        expected = PathDeleteError if impl is delete else GlomPathDeleteError
+        with pytest.raises(expected):
+            impl(deepcopy(obj), path)
+
+    @pytest.mark.parametrize(
+        ("obj", "path"),
+        [
             pytest.param({}, "a.b", id="empty-dict-nested"),
         ],
     )
     def test_raises_path_access_error(self, impl: Callable, obj: Any, path: str):
-        with pytest.raises((PathAccessError, GlomPathAccessError)):
+        expected = PathAccessError if impl is delete else GlomPathAccessError
+        with pytest.raises(expected):
             impl(deepcopy(obj), path)
 
     @pytest.mark.parametrize(
@@ -286,7 +298,7 @@ class TestDeleteGlomCompat:
     # --- Edge: ignore_missing with partial path -----------------------------
 
     def test_ignore_missing_returns_obj_on_missing_intermediate(self, impl: Callable):
-        data = {"a": {}}
+        data: dict[str, Any] = {"a": {}}
         result = impl(data, "a.b.c", ignore_missing=True)
         assert result is data
         assert data == {"a": {}}
