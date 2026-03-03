@@ -10,6 +10,7 @@ from glom import delete as glom_delete, Path  # type: ignore[import-untyped]
 
 from tests.utils import Obj
 
+pytestmark = [pytest.mark.bench]
 
 # ---------------------------------------------------------------------------
 # Glom adapter (converts tuple paths to glom.Path)

@@ -11,4 +11,8 @@ lint-fix:
 
 .PHONY: test
 test:
-	uv run pytest tests
+	uv run pytest -m "not bench" --benchmark-disable
+
+.PHONY: bench
+bench:
+	uv run pytest -m bench

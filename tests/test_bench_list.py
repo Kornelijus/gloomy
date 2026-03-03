@@ -4,6 +4,8 @@ from gloomy import gloom
 import pytest
 from pytest_benchmark.fixture import BenchmarkFixture  # type: ignore[import-untyped]
 
+pytestmark = [pytest.mark.bench]
+
 # fmt: off
 LIST_INDEX_PATH_STR = "0.1.2.3.4"
 LIST_INDEX_PATH_TUPLE = (0, 1, 2, 3, 4)
