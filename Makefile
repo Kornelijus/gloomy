@@ -16,3 +16,7 @@ test:
 .PHONY: bench
 bench:
 	uv run pytest -m bench
+
+.PHONY: bench-report
+bench-report:
+	uv run python scripts/bench_report.py
