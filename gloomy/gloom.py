@@ -31,7 +31,9 @@ def gloom(
         msg = f"Invalid path type: {type(spec)}"
         raise ValueError(msg)
 
-    location = target
+    # Any: location changes type at every traversal step; static narrowing
+    # would require type guards that don't exist for hasattr/type() checks.
+    location: Any = target
 
     for part in path_parts:
         # Fast-path for the most common container: plain dict with string keys.
