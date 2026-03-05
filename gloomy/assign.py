@@ -20,22 +20,19 @@ def assign(
         if not callable(missing):
             raise TypeError(f"expected missing to be callable, not {missing!r}")
 
-    match path:
-        case str():
-            path_parts = tuple(path.split("."))
-        case tuple():
-            path_parts = path
-        case _:
-            msg = f"Invalid path type: {type(path)}"
-            raise ValueError(msg)
+    if isinstance(path, str):
+        path_parts = tuple(path.split("."))
+    elif isinstance(path, tuple):
+        path_parts = path
+    else:
+        msg = f"Invalid path type: {type(path)}"
+        raise ValueError(msg)
 
     location = obj
-    path_len = len(path_parts)
+    last_idx = len(path_parts) - 1
 
     for i, part in enumerate(path_parts):
-        is_destination = i == path_len - 1
-        missing_val = missing() if missing is not _NO_DEFAULT else _NO_DEFAULT
-        to_assign = val if is_destination else missing_val
+        is_destination = i == last_idx
 
         # Try to traverse if not at destination
         if not is_destination:
@@ -59,10 +56,14 @@ def assign(
             except AttributeError:
                 pass
 
-        # Assign value (either destination or missing intermediate)
-        if to_assign is _NO_DEFAULT:
-            raise PathAccessError
+            # Traversal failed: only now compute the missing intermediate
+            if missing is _NO_DEFAULT:
+                raise PathAccessError
+            to_assign = missing()
+        else:
+            to_assign = val
 
+        # Assign value (either destination or missing intermediate)
         if setitem_fn := getattr(location, "__setitem__", None):
             if isinstance(part, int) or _is_digit_ascii(part):
                 try:
@@ -81,22 +82,13 @@ def assign(
                 continue
             except (KeyError, TypeError):
                 pass
-            # setitem_fn(part, to_assign)
-            # if is_destination:
-            # break
-            # location = to_assign
-            # continue
 
         if not hasattr(location, "__dict__"):
             raise PathAssignError(f"Cannot assign to type {type(obj)!r}")
 
-        if setattr_fn := getattr(location, "__setattr__", None):
-            setattr_fn(part, to_assign)
-            if is_destination:
-                break
-            location = to_assign
-            continue
-
-        raise PathAccessError
+        setattr(location, part, to_assign)
+        if is_destination:
+            break
+        location = to_assign
 
     return obj

@@ -4,6 +4,8 @@ from gloomy import gloom
 import pytest
 from pytest_benchmark.fixture import BenchmarkFixture  # type: ignore[import-untyped]
 
+pytestmark = [pytest.mark.bench]
+
 # fmt: off
 DICT_KEY_PATH_STR = "alpha.beta.gamma.delta.epsilon"
 DICT_KEY_PATH_TUPLE = ("alpha", "beta", "gamma", "delta", "epsilon")

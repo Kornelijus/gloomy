@@ -6,6 +6,8 @@ from pytest_benchmark.fixture import BenchmarkFixture  # type: ignore[import-unt
 
 from tests.utils import Obj
 
+pytestmark = [pytest.mark.bench]
+
 
 def _manual_impl_obj_attr_try_except(target: Any, spec: str, **kwargs):
     try:

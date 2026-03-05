@@ -10,6 +10,8 @@ from glom import assign as glom_assign  # type: ignore[import-untyped]
 from pydantic import BaseModel
 import pytest
 
+pytestmark = [pytest.mark.bench]
+
 # fmt: off
 DICT_KEY_PATH_STR = "alpha.beta.gamma.delta.epsilon"
 DICT_KEY_PATH_TUPLE = ("alpha", "beta", "gamma", "delta", "epsilon")
