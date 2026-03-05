@@ -23,44 +23,63 @@ def gloom(
             raise PathAccessError(msg)
         return default
 
+    if isinstance(spec, str):
+        path_parts: list[str] | tuple = spec.split(".")
+    elif isinstance(spec, tuple):
+        path_parts = spec
+    else:
+        msg = f"Invalid path type: {type(spec)}"
+        raise ValueError(msg)
+
     location = target
 
-    match spec:
-        case str():
-            path_parts: list[str] | tuple[str, ...] = spec.split(".")
-        case tuple():
-            path_parts = spec
-        case _:
-            msg = f"Invalid path type: {type(spec)}"
-            raise ValueError(msg)
-
     for part in path_parts:
-        # Get key/index of mapping/sequence
-        if getitem := getattr(location, "__getitem__", None):
+        # Fast-path for the most common container: plain dict with string keys.
+        # Avoids bound-method creation and the _is_digit_ascii check entirely.
+        if type(location) is dict:
+            try:
+                location = location[part]
+                continue
+            except KeyError as ke:
+                # Also coerce digit strings to int (handles {0: v} with path "0")
+                if isinstance(part, str):
+                    try:
+                        location = location[int(part)]
+                        continue
+                    except (ValueError, KeyError):
+                        pass
+                if default is _NO_DEFAULT:
+                    raise PathAccessError from ke
+                return default
+
+        # General path: check the TYPE for __getitem__ — avoids allocating a
+        # bound method object and is faster than getattr(instance, ..., None).
+        elif hasattr(type(location), "__getitem__"):
             if isinstance(part, int) or _is_digit_ascii(part):
                 try:
-                    # Sequence or mapping with int keys
-                    location = getitem(int(part))
+                    location = location[int(part)]
                     continue
                 except IndexError as e:
                     if default is _NO_DEFAULT:
                         raise PathAccessError from e
                     return default
                 except KeyError:
-                    # Possibly mapping with numeric string keys
                     pass
             try:
-                location = getitem(part)
+                location = location[part]
                 continue
             except KeyError as e:
                 if default is _NO_DEFAULT:
                     raise PathAccessError from e
                 return default
-        try:
-            location = getattr(location, part)
-        except AttributeError as e:
-            if default is _NO_DEFAULT:
-                raise PathAccessError from e
-            return default
+
+        # Attribute access (plain objects, dataclasses, Pydantic models, …)
+        else:
+            try:
+                location = getattr(location, part)
+            except AttributeError as e:
+                if default is _NO_DEFAULT:
+                    raise PathAccessError from e
+                return default
 
     return location
