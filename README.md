@@ -9,12 +9,10 @@ A good use-case would be to improve existing codebases in which the `glom` patte
 
 ### Features
 
-- `gloom` (replaces `glom`)
+- `gloom` (fetch)
 - `assign`
 - `delete`
 - dot separated `str` and `tuple[str, ...]` paths supported for traversal
-
-🏗️ `delete` utility
 
 ### Installation
 
